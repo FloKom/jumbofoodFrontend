@@ -44,7 +44,7 @@ const MainPage = ({navigation}) => {
                         console.log('echec de recuperation sur l\'API')
                         produits = await AsyncStorage.getItem('produits')
                         produits = JSON.parse(produits)
-                        packProduits = await AsyncStorage.getItem('packProduits')
+                        packProduits = await AsyncStorage.getItem('p;ackProduits')
                         packProduits = JSON.parse(packProduits)
                         categories = await AsyncStorage.getItem('categories')
                         categories = JSON.parse(categories)
@@ -73,16 +73,16 @@ const MainPage = ({navigation}) => {
                     <CardContainer
                         showsHorizontalScrollIndicator={false}
                         horizontal={true}>
-                        {packProduits.map((item, id)=>{
-                            return (
-                                <CategoryButton key={`${item}-${id}`} onPress={() => { console.log('test1') }}
-                                    activeOpacity={0.6}>
-                                    <ImageBackground style={styles.img1} source={item.photoURL}>
-                                        <Text style={styles.title}> {item.nom} </Text>
-                                    </ImageBackground>
-                                </CategoryButton>
-                            )
-                        })}
+                        {/*{packProduits.map((item, id)=>{*/}
+                        {/*    return (*/}
+                        {/*        <CategoryButton key={`${item}-${id}`} onPress={() => { console.log('test1') }}*/}
+                        {/*            activeOpacity={0.6}>*/}
+                        {/*            <ImageBackground style={styles.img1} source={item.photoURL}>*/}
+                        {/*                <Text style={styles.title}> {item.nom} </Text>*/}
+                        {/*            </ImageBackground>*/}
+                        {/*        </CategoryButton>*/}
+                        {/*    )*/}
+                        {/*})}*/}
                         <CategoryButton onPress={() => { console.log('test1') }}
                             activeOpacity={0.6}>
                             <ImageBackground style={styles.img1} source={require('../../assets/pack.jpg')}>
@@ -105,30 +105,30 @@ const MainPage = ({navigation}) => {
                             </ImageBackground>
                         </CategoryButton>
                     </CardContainer>
-                    {categories.map((item, id)=>{
-                        let subCategories = categories.categories.map((item,id)=>{
-                            return (
-                                <SquareCategoryButton key={`${item}-${id}`} activeOpacity={0.6}  onPress={() => navigation.navigate('All categories', {...item})}>
-                                    <ImageBackground style={styles.img1} source={item.photoURL}>
-                                        <Text style={styles.title2}>{item.nom}</Text>
-                                    </ImageBackground>
-                                </SquareCategoryButton>
-                            )
-                        })
-                        return (
-                            <>
-                                <View key={`${item}-${id}`} style={styles.header}>
-                                    <SubTitle mainpagesubspe={true}>{item.nom}</SubTitle>
-                                    <TouchableOpacity onPress={() => navigation.navigate('All categories', {...item})}><Text >See All &gt;</Text></TouchableOpacity>
-                                </View>
-                                <CardContainer
-                                    showsHorizontalScrollIndicator={false}
-                                    horizontal={true}>
-                                    {subCategories}
-                                </CardContainer>
-                            </>
-                        )
-                    })}
+                    {/*{categories.map((item, id)=>{*/}
+                    {/*    let subCategories = categories.categories.map((item,id)=>{*/}
+                    {/*        return (*/}
+                    {/*            <SquareCategoryButton key={`${item}-${id}`} activeOpacity={0.6}  onPress={() => navigation.navigate('All categories', {...item})}>*/}
+                    {/*                <ImageBackground style={styles.img1} source={item.photoURL}>*/}
+                    {/*                    <Text style={styles.title2}>{item.nom}</Text>*/}
+                    {/*                </ImageBackground>*/}
+                    {/*            </SquareCategoryButton>*/}
+                    {/*        )*/}
+                    {/*    })*/}
+                    {/*    return (*/}
+                    {/*        <>*/}
+                    {/*            <View key={`${item}-${id}`} style={styles.header}>*/}
+                    {/*                <SubTitle mainpagesubspe={true}>{item.nom}</SubTitle>*/}
+                    {/*                <TouchableOpacity onPress={() => navigation.navigate('All categories', {...item})}><Text >See All &gt;</Text></TouchableOpacity>*/}
+                    {/*            </View>*/}
+                    {/*            <CardContainer*/}
+                    {/*                showsHorizontalScrollIndicator={false}*/}
+                    {/*                horizontal={true}>*/}
+                    {/*                {subCategories}*/}
+                    {/*            </CardContainer>*/}
+                    {/*        </>*/}
+                    {/*    )*/}
+                    {/*})}*/}
                     <View style={styles.header}>
                         <SubTitle mainpagesubspe={true}>Food products</SubTitle>
                         <TouchableOpacity onPress={() => navigation.navigate('All categories')}><Text >See All &gt;</Text></TouchableOpacity>
@@ -189,20 +189,20 @@ const MainPage = ({navigation}) => {
                     <CardContainer
                         showsHorizontalScrollIndicator={false}
                         horizontal={true}>
-                            {produits.map((item, id)=>{
-                                return (
-                                    <SquareCategoryButton
-                                        onPress={() => navigation.navigate('product description', {
-                                            ...item
-                                        })}
-                                        key={`${item}-${id}`}
-                                        activeOpacity={0.6}>
-                                        <ImageBackground style={styles.img1} source={item.photoURL}>
-                                            <Text style={styles.title2}>{item.nom}</Text>
-                                        </ImageBackground>
-                                    </SquareCategoryButton>
-                                )
-                            })}
+                            {/*{produits.map((item, id)=>{*/}
+                            {/*    return (*/}
+                            {/*        <SquareCategoryButton*/}
+                            {/*            onPress={() => navigation.navigate('product description', {*/}
+                            {/*                ...item*/}
+                            {/*            })}*/}
+                            {/*            key={`${item}-${id}`}*/}
+                            {/*            activeOpacity={0.6}>*/}
+                            {/*            <ImageBackground style={styles.img1} source={item.photoURL}>*/}
+                            {/*                <Text style={styles.title2}>{item.nom}</Text>*/}
+                            {/*            </ImageBackground>*/}
+                            {/*        </SquareCategoryButton>*/}
+                            {/*    )*/}
+                            {/*})}*/}
                     </CardContainer>
                     <View style={styles.header}>
                         <SubTitle mainpagesubspe={true}>All products</SubTitle>
@@ -239,7 +239,7 @@ const MainPage = ({navigation}) => {
     );
 };
 
-const styless = StyleSheet.create({
+const styles = StyleSheet.create({
     forheight:{
         height: hp('97.8%'),
     },
