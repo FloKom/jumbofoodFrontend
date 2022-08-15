@@ -28,6 +28,7 @@
     "react-native-action-button": "^2.8.5",
     "react-native-date-picker": "^4.2.5",
     "react-native-drop-shadow": "^0.0.5",
+    "react-native-image-colors": "^1.5.1",
     "react-native-image-crop-picker": "^0.38.0",
     "react-native-maps": "^1.1.0",
     "react-native-paper": "^4.12.4",

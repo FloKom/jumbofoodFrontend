@@ -45,19 +45,19 @@ export default function SupplierStack(){
     }
     return (
     <Stack.Navigator initialRouteName={initialRoute} screenOptions={()=>({
-      headerShown:true,
-      headerTitleAlign:"center",
-      headerStyle:{
-        backgroundColor: primary
-      },
+        headerShown:true,
+        headerTitleAlign:"center",
+        headerShadowVisible:false,
+        headerStyle:{
+            backgroundColor: primary
+        },
     })}> 
-        <Stack.Screen 
-          name="proposition form" 
-          component={SubmissionForm} 
-          options={{ 
-            title: 'Product Submission',
-            headerTitle:(props)=><SubTitle stack={true} {...props}/>,
-            
+        <Stack.Screen
+            name="proposition form"
+            component={SubmissionForm}
+            options={{
+                title: 'Product Submission',
+                headerTitle:(props)=><SubTitle stack={true} {...props}/>,
             }} />
         <Stack.Screen name="Become a Supplier" component={BecomeSupplier} />
         <Stack.Screen name="Become a Supplier Condition" component={BecomeSupplierCondition} />

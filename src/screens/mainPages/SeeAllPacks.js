@@ -1,22 +1,31 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { ImageBackground, StyleSheet, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
 import { CardContainer, CategoryButton, Colors, InnerContainer, PageTitle, RightIcon, StyledContainer, StyledTextInput } from '../../components/styles';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
 import { Searchbar } from 'react-native-paper';
-
+import { SplashScreen } from '../../helpers/loader';
 const SeeAllPack = ({route, navigation}) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const onChangeSearch = query => setSearchQuery(query);
-    const packProduits = route.params
+    const [packProduits, setpackProduits] = useState({});
+    const [loading, setloading] = useState(true);
+    useEffect(() => {
+        setpackProduits(route.params.packProduits)
+        setloading(false)
+    }, []);
+    useEffect(() => {
+        console.log(packProduits)
+    }, [packProduits]);
     const { secondary } = Colors;
+    if(loading){
+        return <SplashScreen/>
+    }
     return (
         <KeyboardAvoidingWrapper>
-        <StyledContainer style={styles.forheight}>
+        <StyledContainer>
             <StatusBar style="auto" />
             <InnerContainer>
                
@@ -33,15 +42,15 @@ const SeeAllPack = ({route, navigation}) => {
                             <CategoryButton
                                 key={`${item}-${id}`}
                                 Categoryspe ={true}
-                                onPress={() => { console.log('test1') }}
+                                onPress={() => { navigation.navigate('Product pack Description', {packProduit:item, name:item.nom})}}
                                 activeOpacity={0.6}>
-                                <ImageBackground style={styles.img1} source={item.photoURL}>
-                                    <Text style={styles.title}> </Text>
+                                <ImageBackground style={styles.img1} source={{uri:item.photoURL}}>
+                                    <Text style={styles.title}> {item.nom}</Text>
                                 </ImageBackground>
                             </CategoryButton>
                         )
                     })}
-                    <CategoryButton
+                    {/* <CategoryButton
                     Categoryspe ={true}
                     onPress={() => { console.log('test1') }}
                         activeOpacity={0.6}>
@@ -69,7 +78,7 @@ const SeeAllPack = ({route, navigation}) => {
                         <ImageBackground style={styles.img1} source={require('../../assets/solo.jpg')}>
                             <Text style={styles.title}> Solo Pack </Text>
                         </ImageBackground>
-                    </CategoryButton>
+                    </CategoryButton> */}
                 </CardContainer>
             </InnerContainer>
             </StyledContainer>

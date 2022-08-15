@@ -1,4 +1,4 @@
-const adressIP = '192.168.150.104:3000/'
+const adressIP = '192.168.25.98:3000/'
 export const getData = (route, signal=null)=>{
     console.log('http://' + adressIP + route)
     return fetch('http://' + adressIP + route, {signal})

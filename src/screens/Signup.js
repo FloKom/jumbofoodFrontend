@@ -39,9 +39,7 @@ const Signup = ({navigation}) => {
   const { authContext } = useContext(AuthContext);
 const [hidePassword, setHidePassword] = useState(true);
 const [modalVisible, setModalVisible] = useState(false);
-// const [imagePicker, setimagePicker] = useState({component:null, images:null});
-let phone = null
-let password = null
+const [credential, setCredential] = useState({phone:null, password:null});
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, 'Too Short!')
@@ -80,9 +78,7 @@ const SignupSchema = Yup.object().shape({
             validationSchema= {SignupSchema}
             onSubmit={async (values) => {
               console.log(values);
-              password = values.password
-              phone = values.phone
-              const {firstName, lastName} = values
+              const {firstName, lastName, phone, password} = values
               if(values.password !== values.confirmPassword){
                 console.log('different')
                 message = "Passwords are different! Write the same password"
@@ -94,6 +90,7 @@ const SignupSchema = Yup.object().shape({
                   console.log(res)
                   if(res){
                     console.log("sucess")
+                    setCredential({phone, password})
                     message = "Successfully created account!"
                     route = null
                     setModalVisible(true)
@@ -110,19 +107,19 @@ const SignupSchema = Yup.object().shape({
                 console.log('la suite') 
               }
               
-              // let client = {
-              //   nom:lastName,
-              //   prenom:firstName,
-              //   numero:phone,
-              //   motPasse:password
-              // }
-              // const res = postData(client, '/client')
-              //             .then((res)=>console.log(res))
-              //             .catch(async()=>{
-              //               let toSend = JSON.parse(await getElement('toSend'))
-              //               toSend.push(client)
-              //               await AsyncStorage.setItem('toSend', JSON.stringify(toSend))
-              //             })
+              let client = {
+                nom:lastName,
+                prenom:firstName,
+                numero:phone,
+                motPasse:password
+              }
+              const res = postData(client, '/client')
+                          .then((res)=>console.log(res))
+                          // .catch(async()=>{
+                          //   let toSend = JSON.parse(await getElement('toSend'))
+                          //   toSend.push(client)
+                          //   await AsyncStorage.setItem('toSend', JSON.stringify(toSend))
+                          // })
             }}>
             {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
               <StyledFormArea>
@@ -223,12 +220,12 @@ const SignupSchema = Yup.object().shape({
         <Pressable
           style={[styles.button, styles.buttonClose]}
           onPress={() => {
-            setModalVisible(!modalVisible)
             if(route!=null){
               navigation.navigate(route);
             }else{
-              authContext.signIn({phone,password})
+              authContext.signIn(credential)
             }
+            setModalVisible(!modalVisible)
           }}
         >
           <Text style={styles.textStyle}>OK</Text>
@@ -237,14 +234,6 @@ const SignupSchema = Yup.object().shape({
     </View>
   </Modal>
 </View>
-{/* <Button
-    title='select'
-    onPress={()=>pickMultiple(setimagePicker)}
-    style={styles.button}>
-</Button>
-<View>
-  {imagePicker.component != null ? (imagePicker.component):<Text>no image selected</Text>}
-</View> */}
         </InnerContainer>
       </StyledContainer>
     </KeyboardAvoidingWrapper>

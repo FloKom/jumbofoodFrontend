@@ -4,7 +4,7 @@ import React, {useState, useContext} from 'react';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../navigators/RootStack';
@@ -60,7 +60,8 @@ const SignupSchema = Yup.object().shape({
           onSubmit={async (values) => {
             console.log(values);
             authContext.signIn(values).then((res)=>{ 
-            setwrong(!res)
+              setwrong(!res)
+              setTimeout(()=>setwrong(false), 5000)
           })
           }}>
           {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
@@ -72,6 +73,7 @@ const SignupSchema = Yup.object().shape({
                 placeholderTextColor="gray"
                 onChangeText={handleChange('phone')}
                 onBlur={handleBlur('phone')}
+                onChange={()=>setwrong(false)}
                 value={values.phone}
                 keyboardType="phone-pad"
               />
@@ -88,6 +90,7 @@ const SignupSchema = Yup.object().shape({
                 value={values.password}
                 secureTextEntry={hidePassword}
                 isPassword={true}
+                onChange={()=>setwrong(false)}
                 hidePassword={hidePassword}
                 setHidePassword={setHidePassword}
               />

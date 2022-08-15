@@ -4,11 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { View, Text, StyleSheet, Image, Pressable,Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, Modal } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import DropShadow from "react-native-drop-shadow";
 import ImageColors from 'react-native-image-colors'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { getData } from '../../helpers/fetchData-helpers';
 import {
     StyledContainer,
     InnerContainer,
@@ -33,92 +33,43 @@ import {
 //keyboard avoiding wrapper
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
 import { SplashScreen } from '../../helpers/loader';
-import { TextInput } from 'react-native-paper';
 
 const { secondary } = Colors;
 const B = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
-const ProductDesc = ({route, navigation}) => {
+const PackProductDesc = ({route, navigation}) => {
     const [loading, setloading] = useState(true);
-    const [produit, setproduit] = useState({});
+    const [packProduit, setPackProduit] = useState({});
+    const [produits, setProduits] = useState();
     const [color, setcolor] = useState('red');
     const [value, setValue] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
     useEffect(() => {
         const operation = async ()=>{
-            const result = await ImageColors.getColors(route.params.product.photoURL, {
+            const result = await ImageColors.getColors(route.params.packProduit.photoURL, {
                 fallback: '#228B22',
                 cache: true,
-                key: route.params.product.photoURL,
+                key: route.params.packProduit.photoURL,
               })
             setcolor(result.dominant)
-            setproduit(route.params.product)
+            setPackProduit(route.params.packProduit)
+         
+            const products = await Promise.all(
+                route.params.packProduit.ligneproduit.map((item) => {
+                  return getData('produit/' + item.produitId);
+                })
+            );
+            setProduits(products)
             setloading(false)
         }
         operation()
     }, []);
-    async function updateCart(){
-        let pannier = null
-        // await AsyncStorage.removeItem('pannier')
-        pannier = await AsyncStorage.getItem('pannier')
-        console.log('string', pannier)
-        if(pannier != null){
-            pannier = JSON.parse(pannier)
-            //verifier si ca existe pas deja
-            let ligne = pannier.ligneProduits.filter((item)=> item.produitId == produit.id)
-            if(ligne.length != 0){
-                console.log('ligne', ligne)
-                ligne[0].quantite = parseInt(ligne[0].quantite)
-                ligne[0].prix = parseFloat(ligne[0].prix)
-                ligne[0].quantite += value
-                ligne[0].prix += value*produit.prix
-                pannier.ligneProduits = pannier.ligneProduits.map((item)=>{
-                    if(item.produitId == produit.id){
-                        return ligne[0]
-                    }
-                    return item
-                })
-
-            }else{
-                pannier.ligneProduits.push({
-                    produitId:produit.id,
-                    quantite:value,
-                    prix:value*produit.prix
-                })
-            }
-            pannier.prix = parseFloat(pannier.prix)
-            pannier.prix = pannier.prix + value*produit.prix
-            await AsyncStorage.setItem('pannier', JSON.stringify(pannier))
-        }
-        else{
-            pannier = {
-                prix:0,
-                moyenPaiement:'not',
-                ligneProduits:[],
-                lignePacks:[],
-                clientId:0,
-                pointramassageId:'not',
-                
-            }
-            //client id l'obtenir
-            pannier.prix = pannier.prix + value*produit.prix 
-            pannier.ligneProduits.push({
-                produitId:produit.id,
-                quantite:value,
-                prix:value*produit.prix
-            })
-            pannier = JSON.stringify(pannier)
-            console.log('new', pannier)
-            AsyncStorage.setItem('pannier', pannier)
-        }
-        console.log(pannier)
-    }
     if(loading){
         return <SplashScreen/>
     }
     return (
         <>
-          <Modal
+        <Modal
             statusBarTranslucent={true}
               animationType="slide"
               transparent={true}
@@ -129,7 +80,7 @@ const ProductDesc = ({route, navigation}) => {
           >
               <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                      <Text style={styles.modalText}>{value} {produit.conditionnement} of {produit.nom} were added successfully to cart. What do you want to do now?</Text>
+                      <Text style={styles.modalText}>{value} {packProduit.nom} were added successfully to cart. What do you want to do now?</Text>
                       <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                         <Pressable
                             style={{...styles.button, marginRight:15}}
@@ -155,7 +106,7 @@ const ProductDesc = ({route, navigation}) => {
                   </View>
               </View>
           </Modal>
-       
+
         <KeyboardAvoidingWrapper>
             <StyledContainer style={styles.forheight}>
                 <StatusBar style="auto" />
@@ -164,24 +115,34 @@ const ProductDesc = ({route, navigation}) => {
                         <Image
                             resizeMode="cover"
                             style={{ width: wp('100%'), height: 400 }}
-                            source={{uri:produit.photoURL}} />
+                            source={{uri:packProduit.photoURL}} />
                         {/*route.photoURL*/}
                     </View>
                     <DropShadow style={styles.shadowProp}>
                         <View style={styles.descview}>
                             <View>
-                                <Text style={styles.productTitle}>{produit.nom}</Text>
+                                <Text style={styles.productTitle}>{packProduit.nom}</Text>
                             </View>
                             <View>
-                                <Text style={styles.productsubtitle}> {produit.conditionnement}</Text>
+                                <Text style={styles.productdesc}>{packProduit.description}</Text>
                             </View>
                             <View>
-                                <Text style={styles.productdesc}>{produit.description}</Text>
+                                <Text style={{...styles.productprice, color}}>{packProduit.prix}</Text>
                             </View>
                             <View>
-                                <Text style={{...styles.productprice, color}}>{produit.prix}</Text>
+                                <Text style={{marginBottom:8}}>contains products</Text>
+                                {produits.map((item,id)=>{
+                                    let ligneproduit = packProduit.ligneproduit.filter((ligne)=>ligne.produitId == item.id)
+                                    return (
+                                        <View style={{flexDirection:'row', justifyContent:'space-between', width:'35%'}} key={id}>
+                                            <Text>{item.nom} :</Text>
+                                            <Text>{ligneproduit[0].quantite} {item.conditionnement}</Text>
+                                        </View>
+                                    )
+                                })}
                             </View>
-                            <View style={{flexDirection:'row', marginBottom:30}}>
+
+                            <View style={{flexDirection:'row', marginBottom:30, marginTop:20}}>
                                 <View>
                                     <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Quantity :</Text>
                                 </View>
@@ -228,14 +189,9 @@ const ProductDesc = ({route, navigation}) => {
                             </View>
                             <View style={{flexDirection:'row', justifyContent:'space-between', width:'40%'}}>
                                 <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Total :</Text>
-                                <Text style={{fontSize:20, fontWeight:'bold', color:color}}>{ value*produit.prix }</Text>
+                                <Text style={{fontSize:20, fontWeight:'bold', color:color}}>{ value*packProduit.prix }</Text>
                             </View>
-                            <StyledButton onPress={async ()=>{
-                                await updateCart()
-                                setModalVisible(true)
-                                }
-                            } 
-                                submitproductbutton={true}>
+                            <StyledButton onPress={()=>setModalVisible(true)} submitproductbutton={true}>
                                 <LeftIcon>
                                     <FontAwesome5 name="cart-plus" size={25} color="white" style={{bottom:22}}/>
                                 </LeftIcon>
@@ -246,7 +202,7 @@ const ProductDesc = ({route, navigation}) => {
                 </InnerContainer>
             </StyledContainer>
         </KeyboardAvoidingWrapper>
-    </>
+        </>
     );
 };
 
@@ -288,7 +244,7 @@ const styles = StyleSheet.create({
     },
     productprice: {
         textAlign: 'justify',
-        marginBottom: 30,
+        marginBottom: 10,
         fontWeight: 'bold',
         fontSize: 23,
         color: 'red',
@@ -336,5 +292,4 @@ const styles = StyleSheet.create({
       },
 
 });
-
-export default ProductDesc;
+export default PackProductDesc;

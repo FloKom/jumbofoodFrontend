@@ -1,51 +1,32 @@
-import React, {useState, useEffect} from "react";
-import { TextInput, View, Button } from "react-native";
+import React from "react";
+import { ImageBackground, StyleSheet, Text, View } from "react-native";
 
-function AddField({ navigation }) {
-    const [fields, setFields] = useState([{ value: null }]);
-    useEffect(() => {
-        console.log(fields)
-    }, [fields]);
-    function handleChange(i, event) {
-      console.log(i)
-      const values = [...fields];
-      values[i].value = event;
-      setFields(values);
-      
-    }
-  
-    function handleAdd() {
-      
-      const values = [...fields];
-      values.push({ value: null });
-      setFields(values);
-    }
-  
-    function handleRemove(i) {
-      const values = [...fields];
-      values.splice(i, 1);
-      setFields(values);
-    }
-    
-    return (
-      <View>
-        <Button title="add" onPress={() => handleAdd()} />
-  
-        {fields.map((field, idx) => {
-          return (
-            <View key={`${field}-${idx}`}>
-              <TextInput
-                type="text"
-                placeholder="Enter text"
-                value={field.value}
-                onChangeText={(text) => handleChange(idx, text)}
-              />
-              <Button title="sub" onPress={() => handleRemove(idx)} />
-            </View>
-          );
-        })}
-      </View>
-    );
+const image = { uri: "http://192.168.25.98:3000/images/Capture71660057330443.png" };
+
+const Test = () => (
+  <View style={styles.container}>
+    <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+      <Text style={styles.text}>Inside</Text>
+    </ImageBackground>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  text: {
+    color: "white",
+    fontSize: 42,
+    lineHeight: 84,
+    fontWeight: "bold",
+    textAlign: "center",
+    backgroundColor: "#000000c0"
   }
+});
 
-export default AddField
+export default Test;

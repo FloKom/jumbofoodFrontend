@@ -6,21 +6,23 @@ import SeeAllCat from "../screens/mainPages/SeeAllCat";
 import SeeAllProd from "../screens/mainPages/SeeAllProd";
 import ProductDesc from "../screens/mainPages/ProductDesc";
 import Feather from 'react-native-vector-icons/Feather';
-import { PageTitle } from "../components/styles";
-import { Colors,RightIcon } from "../components/styles";
+import { PageTitle, Colors} from "../components/styles";
 import { TouchableOpacity } from "react-native";
+import PackProductDesc from "../screens/mainPages/PackProductDesc";
+import Cart from "../screens/mainPages/Cart";
 const {secondary, primary} = Colors;
 const Stack = createNativeStackNavigator();
 export default function OrderStack(){
     return(
-    <Stack.Navigator screenOptions={()=>({
+    <Stack.Navigator screenOptions={({navigation})=>({
         headerShown:true,
         headerTitleAlign: "center",
+        headerShadowVisible:false,
         headerStyle:{
             backgroundColor: primary
           },
         headerRight:()=>(
-            <TouchableOpacity><Feather color={secondary} name="shopping-cart" size={25}/></TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('Cart')}><Feather color={secondary} name="shopping-cart" size={25}/></TouchableOpacity>
         )
     })
     }>
@@ -42,25 +44,41 @@ export default function OrderStack(){
         <Stack.Screen 
             name="All products" 
             component={SeeAllProd}
-            options={{
-                title: 'All Products',
+            options={({ route }) => ({ 
+                title: route.params.name,
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>,
-            }}
+            })}
             />
         <Stack.Screen 
             name="All categories" 
             component={SeeAllCat}
-            options={{
-                title: 'All Categories',
+            options={({ route }) => ({ 
+                title: route.params.name,
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>,
-            }}
+            })}
             />
         <Stack.Screen 
             name="product description"  
             component={ProductDesc}
-            options={{
-                title: 'Product Description',
+            options={({ route }) => ({ 
+                title: route.params.name,
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>,
+            })}
+            />
+        <Stack.Screen 
+            name="Product pack Description"  
+            component={PackProductDesc}
+            options={({ route }) => ({ 
+                title: route.params.name,
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>,
+            })}
+            />
+        <Stack.Screen 
+            name="Cart"  
+            component={Cart}
+            options={{
+                title:'Cart',
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>
             }}
             />
     </Stack.Navigator>
