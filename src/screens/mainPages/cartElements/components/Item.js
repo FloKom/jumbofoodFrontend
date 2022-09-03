@@ -63,19 +63,38 @@ function Item({data, setData, setTotal}) {
     let cart = await AsyncStorage.getItem('pannier')
     cart = JSON.parse(cart)
     const element = data.findIndex((item)=>item.id == id)
-    const index = cart.ligneProduits.findIndex((item)=>item.produitId == data[element].produitId)
-    let value = (cart.ligneProduits[index].prix)/(cart.ligneProduits[index].quantite)
-    if(bool){
-      cart.prix = cart.prix + value
-      cart.ligneProduits[index].prix = cart.ligneProduits[index].prix + value
-      cart.ligneProduits[index].quantite = cart.ligneProduits[index].quantite + 1
+    let index = null
+    let value = null
+    if(data[element].produitId == undefined){
+      index = cart.lignePacks.findIndex((item)=>item.packproduitId == data[element].packproduitId)
+      value = (cart.lignePacks[index].prix)/(cart.lignePacks[index].quantite)
+      if(bool){
+        cart.prix = cart.prix + value
+        cart.lignePacks[index].prix = cart.lignePacks[index].prix + value
+        cart.lignePacks[index].quantite = cart.lignePacks[index].quantite + 1
+      }else{
+        cart.prix = cart.prix - value
+        cart.lignePacks[index].prix = cart.lignePacks[index].prix - value
+        cart.lignePacks[index].quantite = cart.lignePacks[index].quantite - 1
+      }
+      if(cart.lignePacks[index].quantite == 0){
+        remove(id)
+      }  
     }else{
-      cart.prix = cart.prix - value
-      cart.ligneProduits[index].prix = cart.ligneProduits[index].prix - value
-      cart.ligneProduits[index].quantite = cart.ligneProduits[index].quantite - 1
-    }
-    if(cart.ligneProduits[index].quantite == 0){
-      remove(id)
+      index = cart.ligneProduits.findIndex((item)=>item.produitId == data[element].produitId)
+      value = (cart.ligneProduits[index].prix)/(cart.ligneProduits[index].quantite)
+      if(bool){
+        cart.prix = cart.prix + value
+        cart.ligneProduits[index].prix = cart.ligneProduits[index].prix + value
+        cart.ligneProduits[index].quantite = cart.ligneProduits[index].quantite + 1
+      }else{
+        cart.prix = cart.prix - value
+        cart.ligneProduits[index].prix = cart.ligneProduits[index].prix - value
+        cart.ligneProduits[index].quantite = cart.ligneProduits[index].quantite - 1
+      }
+      if(cart.ligneProduits[index].quantite == 0){
+        remove(id)
+      }
     }
     setTotal({price:cart.prix, quantity:newData.length})
     await AsyncStorage.setItem('pannier', JSON.stringify(cart))
@@ -88,9 +107,15 @@ function Item({data, setData, setTotal}) {
     newData.splice(element, 1)
     let cart = await AsyncStorage.getItem('pannier')
     cart = JSON.parse(cart)
-    let index = cart.ligneProduits.findIndex((item)=>item.produitId == data[element].produitId)
-    cart.prix = cart.prix - cart.ligneProduits[index].prix
-    cart.ligneProduits.splice(index, 1)
+    if(data[element].produitId == undefined){
+      let index = cart.lignePacks.findIndex((item)=>item.packproduitId == data[element].packproduitId)
+      cart.prix = cart.prix - cart.lignePacks[index].prix
+      cart.lignePacks.splice(index, 1)  
+    }else{
+      let index = cart.ligneProduits.findIndex((item)=>item.produitId == data[element].produitId)
+      cart.prix = cart.prix - cart.ligneProduits[index].prix
+      cart.ligneProduits.splice(index, 1)
+    }
     setTotal({price:cart.prix, quantity:newData.length})
     await AsyncStorage.setItem('pannier', JSON.stringify(cart))
     setData(newData)

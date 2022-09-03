@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState, useContext, useEffect} from 'react';
-import { StyledModal } from './../components/styles';
+import React, {useState, useContext} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,7 +8,7 @@ import {Formik} from 'formik';
 import { AuthContext } from '../navigators/RootStack';
 import * as Yup from 'yup';
 import { postData } from '../helpers/fetchData-helpers';
-import { getElement } from '../helpers/asyncStorage-helpers';
+import { updateClientId } from '../helpers/db-helpers';
 // import pickMultiple from '../helpers/imagePicker';
 import {
   StyledContainer,
@@ -94,6 +93,17 @@ const SignupSchema = Yup.object().shape({
                     message = "Successfully created account!"
                     route = null
                     setModalVisible(true)
+
+                    let client = {
+                      nom:lastName,
+                      prenom:firstName,
+                      numero:phone,
+                      motPasse:password
+                    }
+                    postData(client, 'client')
+                      .then((result)=>result.json().then((client)=>{
+                          updateClientId(res,client.id)
+                            }))
                     
                   }
                   else{
@@ -107,14 +117,6 @@ const SignupSchema = Yup.object().shape({
                 console.log('la suite') 
               }
               
-              let client = {
-                nom:lastName,
-                prenom:firstName,
-                numero:phone,
-                motPasse:password
-              }
-              const res = postData(client, '/client')
-                          .then((res)=>console.log(res))
                           // .catch(async()=>{
                           //   let toSend = JSON.parse(await getElement('toSend'))
                           //   toSend.push(client)

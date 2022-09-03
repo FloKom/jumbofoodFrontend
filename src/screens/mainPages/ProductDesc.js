@@ -1,39 +1,27 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { View, Text, StyleSheet, Image, Pressable,Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable,Modal} from 'react-native';
 import DropShadow from "react-native-drop-shadow";
 import ImageColors from 'react-native-image-colors'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 import {
     StyledContainer,
     InnerContainer,
-    PageLogo,
-    SubTitle,
-    StyledFormArea,
     LeftIcon,
-    StyledInputLabel,
-    StyledTextInput,
-    RightIcon,
     Colors,
     StyledButton,
     ButtonText,
-    Line,
-    MsgBox,
-    ExtraText,
-    ExtraView,
-    TextLink,
-    TextLinkContent,
 } from '../../components/styles';
 
 //keyboard avoiding wrapper
 import KeyboardAvoidingWrapper from '../../components/KeyboardAvoidingWrapper';
 import { SplashScreen } from '../../helpers/loader';
-import { TextInput } from 'react-native-paper';
 
 const { secondary } = Colors;
 const B = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
@@ -44,6 +32,13 @@ const ProductDesc = ({route, navigation}) => {
     const [color, setcolor] = useState('red');
     const [value, setValue] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
+    const showToast = () => {
+        Toast.show({
+          type: 'success',
+          text1: 'Info',
+          text2: value + ' '+ produit.nom + ' was successfully added to cart!'
+        });
+      }
     useEffect(() => {
         const operation = async ()=>{
             const result = await ImageColors.getColors(route.params.product.photoURL, {
@@ -65,6 +60,9 @@ const ProductDesc = ({route, navigation}) => {
         if(pannier != null){
             pannier = JSON.parse(pannier)
             //verifier si ca existe pas deja
+            if(pannier.ligneProduits == undefined){
+                pannier.ligneProduits = []
+            }
             let ligne = pannier.ligneProduits.filter((item)=> item.produitId == produit.id)
             if(ligne.length != 0){
                 console.log('ligne', ligne)
@@ -93,12 +91,7 @@ const ProductDesc = ({route, navigation}) => {
         else{
             pannier = {
                 prix:0,
-                moyenPaiement:'not',
                 ligneProduits:[],
-                lignePacks:[],
-                clientId:0,
-                pointramassageId:'not',
-                
             }
             //client id l'obtenir
             pannier.prix = pannier.prix + value*produit.prix 
@@ -179,9 +172,9 @@ const ProductDesc = ({route, navigation}) => {
                                 <Text style={styles.productdesc}>{produit.description}</Text>
                             </View>
                             <View>
-                                <Text style={{...styles.productprice, color}}>{produit.prix}</Text>
+                                <Text style={{...styles.productprice, color}}>{produit.prix} XAF</Text>
                             </View>
-                            <View style={{flexDirection:'row', marginBottom:30}}>
+                            <View style={{flexDirection:'row'}}>
                                 <View>
                                     <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Quantity :</Text>
                                 </View>
@@ -207,9 +200,8 @@ const ProductDesc = ({route, navigation}) => {
                                         }
                                         iconStyle={{ marginRight: 0 }}
                                     />
-                
-                                    <Text>{value}</Text>
 
+                                    <Text>{value}</Text>
                                     <Icon.Button
                                         name="ios-add"
                                         size={15}
@@ -226,21 +218,43 @@ const ProductDesc = ({route, navigation}) => {
                                     />
                                 </View>
                             </View>
-                            <View style={{flexDirection:'row', justifyContent:'space-between', width:'40%'}}>
+                            {/* <View style={{flexDirection:'row', justifyContent:'space-between', width:'40%'}}>
                                 <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Total :</Text>
                                 <Text style={{fontSize:20, fontWeight:'bold', color:color}}>{ value*produit.prix }</Text>
+                            </View> */}
+                            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                                <StyledButton
+                                    style={{flex:1.25, marginRight:15}} 
+                                    onPress={async ()=>{
+                                        await updateCart()
+                                        // setModalVisible(true)
+                                        //tosat message
+                                        showToast()
+                                        navigation.navigate('Home')
+                                        }
+                                    } 
+                                    submitproductbutton={true}>
+                                    <LeftIcon>
+                                        <FontAwesome5 name="cart-plus" size={25} color="white" style={{bottom:22}}/>
+                                    </LeftIcon>
+                                    <ButtonText> Add to cart</ButtonText>
+                                </StyledButton>
+                                <StyledButton 
+                                    style={{flex:1}}
+                                    onPress={async ()=>{
+                                        await updateCart()
+                                        showToast()
+                                        navigation.navigate('cart')
+                                    }}
+                                submitproductbutton={true}
+                                
+                                >
+                                    <LeftIcon>
+                                        <FontAwesome5 name="dollar-sign" size={25} color="white" style={{bottom:22}}/>
+                                    </LeftIcon>
+                                    <ButtonText> Buy Now</ButtonText>
+                                </StyledButton>
                             </View>
-                            <StyledButton onPress={async ()=>{
-                                await updateCart()
-                                setModalVisible(true)
-                                }
-                            } 
-                                submitproductbutton={true}>
-                                <LeftIcon>
-                                    <FontAwesome5 name="cart-plus" size={25} color="white" style={{bottom:22}}/>
-                                </LeftIcon>
-                                <ButtonText style={{paddingLeft:15}}> Add to cart</ButtonText>
-                            </StyledButton>
                         </View>
                     </DropShadow>
                 </InnerContainer>
@@ -279,7 +293,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     productsubtitle: {
-        marginBottom: 30,
+        marginBottom: 20,
 
     },
     productdesc: {

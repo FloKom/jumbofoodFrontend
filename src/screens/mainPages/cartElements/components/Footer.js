@@ -1,13 +1,20 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity, } from 'react-native';
 import TotalComp from './TotalComponent';
-import { Colors } from '../../../../components/styles';
-
+import { ExtraView, TextLink, TextLinkContent,  Colors } from '../../../../components/styles';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
  const { secondary } = Colors;
 
-const Footer = ({total}) => {
- 
+const Footer = ({total, navigation}) => {
+  
+  const showToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Info',
+      text2: 'Your cart\'s price must be superior or equal to 5000XAF'
+    });
+  }
   const {
     containerStyle,
     buttonContainerStyle,
@@ -17,14 +24,34 @@ const Footer = ({total}) => {
     <View style={containerStyle}>
       <TotalComp total={total} />
       <View style={buttonContainerStyle}>
-        <View style={closeButtonStyle}>
+        <TouchableOpacity 
+          style={closeButtonStyle}
+          onPress={()=>{
+            navigation.navigate('MainPage')
+          }}>
           <Text style={{ color: '#fff' }}>Close</Text>
-        </View>
+        </TouchableOpacity>
 
-        <View style={checkoutButtonStyle}>
+        <TouchableOpacity 
+          style={checkoutButtonStyle}
+          onPress = {()=>{
+            if(total.price > 100){
+              navigation.navigate('Checkout')            
+            }
+            else{
+              showToast()
+            }
+          }}
+          >
           <Text style={{ color: '#fff' }}>Go to checkout</Text>
-        </View>
+        </TouchableOpacity>
       </View>
+      <ExtraView>
+          <TextLink onPress={() => navigation.navigate('paymentSuccess')}>
+              <TextLinkContent>See my active code</TextLinkContent>
+          </TextLink>
+      </ExtraView>
+
     </View>
   );
 };

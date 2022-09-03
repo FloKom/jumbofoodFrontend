@@ -13,7 +13,7 @@ const TotalComponent = ({total}) => {
 
       <View style={totalStyle}>
         <Text>Total - </Text>
-        <Text style={{fontWeight:'bold', color:'black',fontSize:20}}>{total.price} XAF</Text>
+        <Text style={{fontWeight:'bold', color:'black'}} >{total.price} XAF</Text>
       </View>
     </View>
   );

@@ -92,9 +92,11 @@ const RootStack = () => {
                 dispatch({ type: 'SIGN_IN', token })
             }
             return result.result
-            
           },
-          signOut: () => dispatch({ type: 'SIGN_OUT' }),
+          signOut: () => {
+            dispatch({ type: 'SIGN_OUT' })
+            AsyncStorage.removeItem('token')
+          },
           signUp: async (data) => {
             // In a production app, we need to send user data to server and get a token
             // We will also need to handle errors if sign up failed

@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import {Alert,Pressable, Modal, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {widthPercentageToDP as wp,  heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { SplashScreen } from '../../helpers/loader';
-
+import { StackActions } from '@react-navigation/native';
 
 // const sections = [
 //   {
@@ -25,8 +25,6 @@ import { SplashScreen } from '../../helpers/loader';
 //   },
 // ];
 
-
-
 const SeeAllProd = ({route, navigation}) => {
 const [loading, setloading] = useState(true);
 const [data, setdata] = useState();
@@ -44,7 +42,9 @@ function alphabeticSort(items){
     })
     items.forEach((item, index)=>{
       if(item.nom.charAt(0).toUpperCase() === char){
-        sections[sections.length-1].data.push({ nom: item.nom, prix: item.prix, photoURL:item.photoURL, conditionnement:item.conditionnement, description:item.description, id:item.id })
+        let itemToPush = { nom: item.nom, prix: item.prix, photoURL:item.photoURL, conditionnement:item.conditionnement, description:item.description, id:item.id }
+        itemToPush = item.produit != undefined ? {...itemToPush, produit:item.produit}:itemToPush
+        sections[sections.length-1].data.push(itemToPush)
       }
     })
     sections =  sections.filter((item)=>item.data.length != 0)
@@ -65,59 +65,36 @@ useEffect(() => {
     return <SplashScreen/>
   }
   return (
-
-    <>
-    {/* <View style={styles.centeredView}>
-          <Modal
-            statusBarTranslucent={true}
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                  Alert.alert('Modal has been closed.');
-                  setModalVisible(!modalVisible);
-              } }
-          >
-              <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                      <Text style={styles.modalText}>Hello World!</Text>
-                      <Pressable
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => setModalVisible(!modalVisible)}
-                      >
-                          <Text style={styles.textStyle}>Hide Modal</Text>
-                      </Pressable>
-                  </View>
-              </View>
-          </Modal>
-      </View> */}
+    <View style={styles.centeredView}>
       <SectionList
-              style={styles.sectionliststyle}
-              sections={data}
-              renderItem={({ item }) => <TouchableOpacity onPress={() => {
-                if(item.prix != undefined){
-                  return navigation.navigate('product description',{product:item})
-                }
-                return navigation.navigate('All products', {produits:item.produit, name:item .nom})
-                }}>
-                  <View style={styles.container}>
-                      <View style={styles.imagecontainer}>
-                          <Image
-                              style={{ height: 100, width: 140, borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
-                              source={{uri:item.photoURL}} />
-                      </View>
-                      <View style={styles.titlecontainer}>
-                          <Text style={styles.title}>{item.nom}</Text>
-                          <Text style={styles.subtitle}>{item.prix != undefined ? item.prix + ' XAF' : ''}</Text>
-                      </View>
-                  </View>
-              </TouchableOpacity>}
-              renderSectionHeader={({ section }) => (
-                  <Text style={styles.header}>{section.title}</Text>
-              )}
-              keyExtractor={(item) => item.id} /></>
-
-
+        style={styles.sectionliststyle}
+        sections={data}
+        renderItem={({ item }) => <TouchableOpacity onPress={() => {
+          if(item.prix != undefined){
+            return navigation.navigate('product description',{product:item, name:item.nom})
+          }
+          return navigation.dispatch(
+            StackActions.push('All products', {produits:item.produit, name:item.nom})
+          )
+          }}>
+            <View style={styles.container}>
+                <View>
+                    <Image
+                        style={{ height: 100, width: 140, borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
+                        source={{uri:item.photoURL}} />
+                </View>
+                <View style={styles.titlecontainer}>
+                    <Text style={styles.title}>{item.nom}</Text>
+                    <Text style={styles.subtitle}>{item.prix != undefined ? item.prix + ' XAF' : ''}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>}
+        renderSectionHeader={({ section }) => (
+            <Text style={styles.header}>{section.title}</Text>
+        )}
+        keyExtractor={(item) => item.id}
+         />
+      </View>
   );
 };
 
@@ -162,8 +139,7 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#00000099',
+    alignItems: 'center'
   },
   modalView: {
     margin: 20,

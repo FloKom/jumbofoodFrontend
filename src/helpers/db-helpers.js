@@ -20,7 +20,7 @@ export const createtable = ()=>{
         db.transaction((tx)=>{
             
             tx.executeSql(
-              'CREATE TABLE IF NOT EXISTS user(id INTEGER PRIMARY KEY AUTOINCREMENT, nom VARCHAR(20),prenom VARCHAR(20), numero VARCHAR(20),motPasse VARCHAR(20), ville VARCHAR(20), quartier VARCHAR(20),address VARCHAR(20), sexe VARCHAR(20), preference VARCHAR(40), statut VARCHAR(40), producteurId VARCHAR(40))',
+              'CREATE TABLE IF NOT EXISTS user(id INTEGER PRIMARY KEY AUTOINCREMENT, nom VARCHAR(20),prenom VARCHAR(20), numero VARCHAR(20),motPasse VARCHAR(20), ville VARCHAR(20), quartier VARCHAR(20),address VARCHAR(20), sexe VARCHAR(20), preference VARCHAR(40), statut VARCHAR(40), producteurId VARCHAR(40), clientId VARCHAR(40))',
               [],
               (sqlTxn, res)=>{
                 console.log("table user cree")
@@ -42,7 +42,7 @@ export const authUser = (numero, password)=>{
                 if(len>0){
                   for(let i=0;i<len;i++){
                     let item = res.rows.item(i)
-                    results.push({id:item.id, nom:item.nom, prenom:item.prenom, numero:item.numero, motPasse:item.motPasse, statut:item.statut, producteurId:item.producteurId})
+                    results.push({id:item.id, nom:item.nom, prenom:item.prenom, numero:item.numero, motPasse:item.motPasse, statut:item.statut, producteurId:item.producteurId, clientId:item.clientId})
                     //ajouter producteurId
                     resolve({...results[0], result:results[0].motPasse==password})
                   }
@@ -66,11 +66,12 @@ const insert = (firstName,name, password, number)=>new Promise((resolve, reject)
         'INSERT INTO user (nom, prenom, numero, motPasse, statut) values (?,?,?,?,?)',
         [name, firstName, number, password, "client"],
         (sqlTxn, res)=>{
+          resolve(res.insertId)
           console.log("User cree")
         },
         (e)=>{reject(e)}
       )
-    },(e)=>console.log(e),()=>resolve(true))
+    },(e)=>console.log(e))
 }
 });
 
@@ -110,6 +111,23 @@ export const updateUser = (id, statut)=>{
       tx.executeSql(
         'UPDATE user SET statut = ? WHERE id = ? ',
         [statut, id],(trans, result)=>{
+          resolve(result)
+        },(e)=>{
+          reject(e)
+        }
+      )
+    })    
+  });
+  
+}
+
+export const updateClientId = (id, clientId)=>{
+  id = parseInt(id)
+  return new Promise((resolve, reject) => {
+    db.transaction((tx)=>{
+      tx.executeSql(
+        'UPDATE user SET clientId = ? WHERE id = ? ',
+        [clientId, id],(trans, result)=>{
           resolve(result)
         },(e)=>{
           reject(e)

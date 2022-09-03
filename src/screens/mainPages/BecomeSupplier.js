@@ -15,7 +15,7 @@ const BecomeSupplier = ({navigation}) => {
             <StyledContainer style={styles.forheight}>
                 <StatusBar style="auto"/>
                 <InnerContainer >
-                    <SubTitle becomesupplier={true}> Supplier </SubTitle>
+                    {/* <SubTitle becomesupplier={true}> Supplier </SubTitle> */}
                         <StyledFormArea becomesupplierformarea={true}>
                             <Text style={styles.text}>By clicking the button below, you agree to abide by all of our rules
                                 and conditions for becoming a certified Jumbo Food supplier and will be able to:

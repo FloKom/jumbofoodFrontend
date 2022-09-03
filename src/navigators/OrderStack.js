@@ -10,6 +10,9 @@ import { PageTitle, Colors} from "../components/styles";
 import { TouchableOpacity } from "react-native";
 import PackProductDesc from "../screens/mainPages/PackProductDesc";
 import Cart from "../screens/mainPages/Cart";
+import Checkout from "../screens/mainPages/Checkout";
+import CartHistory from "../screens/mainPages/CartHistory";
+import CartEmpty from "../screens/mainPages/CartEmpty";
 const {secondary, primary} = Colors;
 const Stack = createNativeStackNavigator();
 export default function OrderStack(){
@@ -22,7 +25,7 @@ export default function OrderStack(){
             backgroundColor: primary
           },
         headerRight:()=>(
-            <TouchableOpacity onPress={()=>navigation.navigate('Cart')}><Feather color={secondary} name="shopping-cart" size={25}/></TouchableOpacity>
+            <TouchableOpacity onPress={()=>navigation.navigate('cart')}><Feather color={secondary} name="shopping-cart" size={25}/></TouchableOpacity>
         )
     })
     }>
@@ -45,6 +48,7 @@ export default function OrderStack(){
             name="All products" 
             component={SeeAllProd}
             options={({ route }) => ({ 
+
                 title: route.params.name,
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>,
             })}
@@ -73,7 +77,7 @@ export default function OrderStack(){
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>,
             })}
             />
-        <Stack.Screen 
+        {/* <Stack.Screen 
             name="Cart"  
             component={Cart}
             options={{
@@ -81,5 +85,29 @@ export default function OrderStack(){
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>
             }}
             />
+        <Stack.Screen 
+            name="CartEmpty"  
+            component={CartEmpty}
+            options={{
+                title:'Cart empty',
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>
+            }}
+            />
+        <Stack.Screen 
+            name="CartHistory"  
+            component={CartHistory}
+            options={{
+                title:'Purchase history',
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>
+            }}
+            />
+        <Stack.Screen 
+            name="Checkout"  
+            component={Checkout}
+            options={{
+                title:'Checkout',
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>
+            }}
+            /> */}
     </Stack.Navigator>
 )}

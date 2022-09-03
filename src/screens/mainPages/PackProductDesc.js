@@ -8,26 +8,16 @@ import { View, Text, StyleSheet, Image, Pressable, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DropShadow from "react-native-drop-shadow";
 import ImageColors from 'react-native-image-colors'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getData } from '../../helpers/fetchData-helpers';
+import Toast from 'react-native-toast-message';
 import {
     StyledContainer,
     InnerContainer,
-    PageLogo,
-    SubTitle,
-    StyledFormArea,
     LeftIcon,
-    StyledInputLabel,
-    StyledTextInput,
-    RightIcon,
     Colors,
     StyledButton,
     ButtonText,
-    Line,
-    MsgBox,
-    ExtraText,
-    ExtraView,
-    TextLink,
-    TextLinkContent,
 } from '../../components/styles';
 
 //keyboard avoiding wrapper
@@ -43,7 +33,15 @@ const PackProductDesc = ({route, navigation}) => {
     const [produits, setProduits] = useState();
     const [color, setcolor] = useState('red');
     const [value, setValue] = useState(1);
+    const [cart, setCart] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
+    const showToast = () => {
+        Toast.show({
+          type: 'success',
+          text1: 'Info',
+          text2: value +' '+ packProduit.nom + ' was successfully added to cart!'
+        });
+      }
     useEffect(() => {
         const operation = async ()=>{
             const result = await ImageColors.getColors(route.params.packProduit.photoURL, {
@@ -64,6 +62,63 @@ const PackProductDesc = ({route, navigation}) => {
         }
         operation()
     }, []);
+
+    async function updateCart(){
+        let pannier = null
+        // await AsyncStorage.removeItem('pannier')
+        pannier = await AsyncStorage.getItem('pannier')
+        console.log('string', pannier)
+        if(pannier != null){
+            pannier = JSON.parse(pannier)
+            //verifier si ca existe pas deja
+            if(pannier.lignePacks == undefined){
+                pannier.lignePacks = []
+            }
+            let ligne = pannier.lignePacks.filter((item)=> item.packproduitId == packProduit.id)
+            if(ligne.length != 0){
+                console.log('ligne', ligne)
+                ligne[0].quantite = parseInt(ligne[0].quantite)
+                ligne[0].prix = parseFloat(ligne[0].prix)
+                ligne[0].quantite += value
+                ligne[0].prix += value*packProduit.prix
+                pannier.lignePacks = pannier.lignePacks.map((item)=>{
+                    if(item.packproduitId == packProduit.id){
+                        return ligne[0]
+                    }
+                    return item
+                })
+
+            }else{
+                pannier.lignePacks.push({
+                    packproduitId:packProduit.id,
+                    quantite:value,
+                    prix:value*packProduit.prix
+                })
+            }
+            pannier.prix = parseFloat(pannier.prix)
+            pannier.prix = pannier.prix + value*packProduit.prix
+            await AsyncStorage.setItem('pannier', JSON.stringify(pannier))
+        }
+        else{
+            pannier = {
+                prix:0,
+                lignePacks:[],
+            }
+            //client id l'obtenir
+            pannier.prix = pannier.prix + value*packProduit.prix 
+            pannier.lignePacks.push({
+                packproduitId:packProduit.id,
+                quantite:value,
+                prix:value*packProduit.prix
+            })
+            pannier = JSON.stringify(pannier)
+            console.log('new', pannier)
+            AsyncStorage.setItem('pannier', pannier)
+        }
+        setCart(pannier)
+        console.log(pannier)
+    }
+
     if(loading){
         return <SplashScreen/>
     }
@@ -127,7 +182,7 @@ const PackProductDesc = ({route, navigation}) => {
                                 <Text style={styles.productdesc}>{packProduit.description}</Text>
                             </View>
                             <View>
-                                <Text style={{...styles.productprice, color}}>{packProduit.prix}</Text>
+                                <Text style={{...styles.productprice, color}}>{packProduit.prix} XAF</Text>
                             </View>
                             <View>
                                 <Text style={{marginBottom:8}}>contains products</Text>
@@ -142,7 +197,7 @@ const PackProductDesc = ({route, navigation}) => {
                                 })}
                             </View>
 
-                            <View style={{flexDirection:'row', marginBottom:30, marginTop:20}}>
+                            <View style={{flexDirection:'row',marginTop:15}}>
                                 <View>
                                     <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Quantity :</Text>
                                 </View>
@@ -187,16 +242,41 @@ const PackProductDesc = ({route, navigation}) => {
                                     />
                                 </View>
                             </View>
-                            <View style={{flexDirection:'row', justifyContent:'space-between', width:'40%'}}>
+                            {/* <View style={{flexDirection:'row', justifyContent:'space-between', width:'40%'}}>
                                 <Text style={{fontSize:20, fontWeight:'bold', color:'black'}}>Total :</Text>
                                 <Text style={{fontSize:20, fontWeight:'bold', color:color}}>{ value*packProduit.prix }</Text>
+                            </View> */}
+                            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                                <StyledButton
+                                    style={{flex:1.25, marginRight:15}} 
+                                    onPress={async ()=>{
+                                        await updateCart()
+                                        showToast()
+                                        navigation.navigate('Home')
+                                        }
+                                    } 
+                                    submitproductbutton={true}>
+                                    <LeftIcon>
+                                        <FontAwesome5 name="cart-plus" size={25} color="white" style={{bottom:22}}/>
+                                    </LeftIcon>
+                                    <ButtonText> Add to cart</ButtonText>
+                                </StyledButton>
+                                <StyledButton 
+                                    style={{flex:1}}
+                                    onPress={async ()=>{
+                                        await updateCart()
+                                        showToast()
+                                        navigation.navigate('cart')
+                                    }}
+                                submitproductbutton={true}
+                                
+                                >
+                                    <LeftIcon>
+                                        <FontAwesome5 name="dollar-sign" size={25} color="white" style={{bottom:22}}/>
+                                    </LeftIcon>
+                                    <ButtonText> Buy Now</ButtonText>
+                                </StyledButton>
                             </View>
-                            <StyledButton onPress={()=>setModalVisible(true)} submitproductbutton={true}>
-                                <LeftIcon>
-                                    <FontAwesome5 name="cart-plus" size={25} color="white" style={{bottom:22}}/>
-                                </LeftIcon>
-                                <ButtonText style={{paddingLeft:15}}> Add to cart</ButtonText>
-                            </StyledButton>
                         </View>
                     </DropShadow>
                 </InnerContainer>
@@ -240,7 +320,7 @@ const styles = StyleSheet.create({
     },
     productdesc: {
         textAlign: 'justify',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     productprice: {
         textAlign: 'justify',

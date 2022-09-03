@@ -251,10 +251,10 @@ export const StyledButton = styled.TouchableOpacity`
    ${props =>
     props.submitproductbutton === true &&
     `
-    width: 60%;
+    width: auto;
     margin: auto;
-    margin-bottom: 105px;
-    margin-top: 50px;
+    margin-bottom: 35px;
+    margin-top: 40px;
    `}
    ${props =>
     props.selectimg === true &&

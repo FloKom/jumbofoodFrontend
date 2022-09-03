@@ -83,11 +83,11 @@ const BecomeSupplierCondition = ({navigation}) => {
                 <StatusBar style="auto" />
                 <InnerContainer>
 
-                    <PageLogoSpe
+                    {/* <PageLogoSpe
                         resizeMode="cover"
                         source={require('../../assets/jumbofoodlogo.png')}
-                    />
-                    <SubTitle>Supplier form</SubTitle>
+                    /> */}
+                    {/* <SubTitle>Supplier form</SubTitle> */}
                     <Formik
                         initialValues={{
                             conditioning: 'Jumbo Food',

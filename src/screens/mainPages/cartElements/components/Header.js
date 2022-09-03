@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import {Alert, Modal, Pressable, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-const Header = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+const Header = ({setData, setTotal}) => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <>
@@ -22,7 +22,12 @@ const Header = () => {
             <Text style={styles.modalText}>Do you really want to wipe all your cart ?</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={async() => {
+                AsyncStorage.setItem('pannier',JSON.stringify({prix:0}))
+                setData([])
+                setTotal({price:0, quantity:0})
+                setModalVisible(!modalVisible)
+              }}
             >
               <Text style={styles.textStyle}>Yes</Text>
             </Pressable>
@@ -36,7 +41,7 @@ const Header = () => {
         </TouchableOpacity>
         <Text style={{ fontSize: 18 }}>Your Shopping Cart</Text>
         <TouchableOpacity
-        onPress={() => setModalVisible(true)}>
+          onPress={() => setModalVisible(true)}>
           <Text>Empty</Text>
         </TouchableOpacity>
       </View></>

@@ -155,7 +155,7 @@ const MyTextInput = ({
 
 const styles = StyleSheet.create({
   forheight:{
-    height: hp('100%'),
+    // height: hp('100%'),
 },
 });
 
