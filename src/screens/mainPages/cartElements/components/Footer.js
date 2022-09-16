@@ -35,7 +35,7 @@ const Footer = ({total, navigation}) => {
         <TouchableOpacity 
           style={checkoutButtonStyle}
           onPress = {()=>{
-            if(total.price > 100){
+            if(total.price > 10){
               navigation.navigate('Checkout')            
             }
             else{

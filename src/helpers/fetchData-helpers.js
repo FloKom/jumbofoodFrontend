@@ -1,4 +1,4 @@
-const adressIP = '192.168.150.98:3000/'
+const adressIP = '192.168.198.98:3000/'
 const paymentGateway = 'https://pay.ikwen.com/' 
 
 let details = {

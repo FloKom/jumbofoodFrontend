@@ -26,48 +26,54 @@ const Cart = ({navigation}) => {
                 pannier = {prix:0}
             }
             pannier = JSON.parse(pannier)
-            if(pannier.ligneProduits != undefined){
-                products = await Promise.all(
-                    pannier.ligneProduits.map((item) => {
-                      return getData('produit/' + item.produitId);
-                    })
-                );
-                tosend = [...products.map((produit,id)=>{
-                    let ligneproduit = pannier.ligneProduits.filter((ligne)=>ligne.produitId == produit.id)
-                    comp = id
-                    return {
-                        photoURL:produit.photoURL,
-                        id,
-                        nom:produit.nom,
-                        prix:produit.prix,
-                        quantite:ligneproduit[0].quantite,
-                        produitId:produit.id
-                    }
-                }), ...tosend]
-            }
-            if(pannier.lignePacks != undefined){
-                packProducts = await Promise.all(
-                    pannier.lignePacks.map((item) => {
-                      return getData('packProduit/' + item.packproduitId);
-                    })
-                );
-                tosend = [...packProducts.map((packProduct,id)=>{
-                    let lignePack = pannier.lignePacks.filter((ligne)=>ligne.packproduitId == packProduct.id)
-                    return {
-                        photoURL:packProduct.photoURL,
-                        id:comp + id + 1,
-                        nom:packProduct.nom,
-                        prix:packProduct.prix,
-                        quantite:lignePack[0].quantite,
-                        packproduitId:packProduct.id
-                    }
-                }), ...tosend]
-            }
-            console.log('produits', products)
-            console.log('pack produit', packProducts)
+            try {
+                if(pannier.ligneProduits != undefined){
+                    products = await Promise.all(
+                        pannier.ligneProduits.map((item) => {
+                          return getData('produit/' + item.produitId);
+                        })
+                    );
+                    tosend = [...products.map((produit,id)=>{
+                        let ligneproduit = pannier.ligneProduits.filter((ligne)=>ligne.produitId == produit.id)
+                        comp = id
+                        return {
+                            photoURL:produit.photoURL,
+                            id,
+                            nom:produit.nom,
+                            prix:produit.prix,
+                            quantite:ligneproduit[0].quantite,
+                            produitId:produit.id
+                        }
+                    }), ...tosend]
+                }
+                if(pannier.lignePacks != undefined){
+                    packProducts = await Promise.all(
+                        pannier.lignePacks.map((item) => {
+                          return getData('packProduit/' + item.packproduitId);
+                        })
+                    );
+                    tosend = [...packProducts.map((packProduct,id)=>{
+                        let lignePack = pannier.lignePacks.filter((ligne)=>ligne.packproduitId == packProduct.id)
+                        return {
+                            photoURL:packProduct.photoURL,
+                            id:comp + id + 1,
+                            nom:packProduct.nom,
+                            prix:packProduct.prix,
+                            quantite:lignePack[0].quantite,
+                            packproduitId:packProduct.id
+                        }
+                    }), ...tosend]
+                }
+                console.log('produits', products)
+                console.log('pack produit', packProducts)
+                
+            } catch (error) {
+                if(error)
+                AsyncStorage.setItem('pannier',JSON.stringify({prix:0}))
+            }   
             settotal({price:pannier.prix, quantity:tosend.length})
             setData(tosend)
-            setloading(false)
+            setloading(false) 
         }
         getItem()
     }, []);

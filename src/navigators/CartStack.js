@@ -6,6 +6,7 @@ import CartHistory from "../screens/mainPages/CartHistory";
 import Checkout from "../screens/mainPages/Checkout";
 import { PageTitle, Colors} from "../components/styles";
 import PaymentSuccess from "../screens/mainPages/ActiveTransactionCode";
+import Recap from "../screens/mainPages/recap";
 const {secondary, primary} = Colors;
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +60,14 @@ export default function CartStack(){
             component={PaymentSuccess}
             options={{
                 title:'Active Transaction Code',
+                headerTitle:(props)=><PageTitle stack={true} {...props}/>
+            }}
+            />
+        <Stack.Screen 
+            name="recap"  
+            component={Recap}
+            options={{
+                title:'Recapitulatif',
                 headerTitle:(props)=><PageTitle stack={true} {...props}/>
             }}
             />
